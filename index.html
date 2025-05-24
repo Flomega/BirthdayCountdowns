@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Countdowns</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .countdown-card {
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .countdown-card:hover {
+      transform: scale(1.02);
+      box-shadow: 0 12px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    .highlight-yellow {
+      border-left-color: #facc15; /* Tailwind yellow-400 */
+      color: #ca8a04; /* Tailwind yellow-600 */
+    }
+
+    .highlight-yellow .days {
+      color: #ca8a04;
+    }
+  </style>
+</head>
+<body class="bg-gradient-to-br from-yellow-50 via-purple-100 to-blue-50 min-h-screen p-6">
+  <div class="max-w-7xl mx-auto space-y-10">
+
+    <div class="text-center">
+      <h1 class="text-4xl font-extrabold text-yellow-600">🎉 Countdowns</h1>
+    </div>
+
+    <!-- Christmas Countdown -->
+    <div>
+      <h2 class="text-3xl font-bold mb-4 text-red-600">🎄 Christmas Eve</h2>
+      <div id="christmas" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+    </div>
+
+    <!-- Family Section -->
+    <div>
+      <h2 class="text-3xl font-bold mb-4 text-purple-800">Family</h2>
+      <div id="family" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+    </div>
+
+    <!-- Friends Section -->
+    <div>
+      <h2 class="text-3xl font-bold mb-4 text-green-700">Friends</h2>
+      <div id="friends" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+    </div>
+
+    <!-- Separator -->
+    <hr class="border-t-4 border-gray-300 my-8"/>
+
+    <!-- Online Section -->
+    <div>
+      <h2 class="text-3xl font-bold mb-4 text-blue-700">Online</h2>
+      <div id="online" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+    </div>
+
+  </div>
+
+  <script>
+    const birthdays = [
+      { name: "Mom", date: "2026-05-20", category: "family" },
+      { name: "Dad", date: "2025-10-20", category: "family" },
+      { name: "My Own", date: "2025-12-19", category: "family" },
+      { name: "Tristan", date: "2025-09-08", category: "family" },
+      { name: "Jörgen", date: "2025-12-10", category: "family" },
+      { name: "Steffus", date: "2025-03-05", category: "friends" },
+      { name: "Logan", date: " NA ", category: "friends" },
+      { name: "Manzus", date: "2025-02-18", category: "friends" },
+      { name: "Lian", date: "2025-12-30", category: "friends" },
+      { name: "Benjamin", date: "2025-08-03", category: "friends" },
+      { name: "Noah", date: "2025-11-27", category: "friends" },
+      { name: "Fabian", date: "2025-10-24", category: "friends" },
+      { name: "Scott", date: "2025-11-05", category: "online" },
+      { name: "Jack ", date: "2025-07-19", category: "online" },
+      { name: "Woofer, ye, whatever", date: "2025-05-17", category: "online" },
+      { name: "Unzealots", date: "2025-11-26", category: "online" },
+      { name: "Cemra", date: "2025-03-18", category: "online" },
+
+    ];
+
+    function getNextDate(dateStr) {
+      const today = new Date();
+      const birthday = new Date(dateStr);
+      let target = new Date(today.getFullYear(), birthday.getMonth(), birthday.getDate());
+      if (target < today) target.setFullYear(today.getFullYear() + 1);
+      return target;
+    }
+
+    function getCountdown(targetDate) {
+      const today = new Date();
+      const diffTime = targetDate - today;
+      return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    }
+
+    function createCard(name, targetDate, extraClass = "") {
+      const days = getCountdown(targetDate);
+      const formattedDate = targetDate.toLocaleDateString(undefined, { month: 'long', day: 'numeric' });
+
+      return `
+        <div class="countdown-card bg-white border-l-8 rounded-xl shadow-lg p-5 flex justify-between items-center ${extraClass}">
+          <div>
+            <div class="text-xl font-bold">${name}</div>
+            <div class="text-sm text-gray-500">${formattedDate}</div>
+          </div>
+          <div class="text-2xl font-bold days">${days} days</div>
+        </div>
+      `;
+    }
+
+    function renderCategory(category, colorClass) {
+      const container = document.getElementById(category);
+      const filtered = birthdays.filter(b => b.category === category);
+      container.innerHTML = filtered.map(b =>
+        createCard(b.name, getNextDate(b.date), colorClass)
+      ).join('');
+    }
+
+    // Render sections
+    renderCategory("family", "border-purple-600 text-purple-600");
+    renderCategory("friends", "border-green-600 text-green-600");
+    renderCategory("online", "border-blue-600 text-blue-600");
+
+    // Christmas Eve countdown
+    const christmasContainer = document.getElementById("christmas");
+    const christmasDate = getNextDate(`${new Date().getFullYear()}-12-24`);
+    christmasContainer.innerHTML = createCard("Christmas Eve", christmasDate, "highlight-yellow");
+  </script>
+</body>
+</html>
